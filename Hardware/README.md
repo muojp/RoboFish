@@ -2,4 +2,4 @@
 
 Hardware Kit of RoboFish
 
-![](/hardware/img/robofish001.png)
+![](/Hardware/img/robofish001.png)
