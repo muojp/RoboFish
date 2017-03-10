@@ -1,3 +1,3 @@
 # RoboFish
 
-Dataset of RoboFish
+AI of RoboFish

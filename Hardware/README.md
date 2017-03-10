@@ -1,3 +1,5 @@
 # RoboFish
 
-Dataset of RoboFish
+Hardware Kit of RoboFish
+
+![](/img/robofish001.png)
