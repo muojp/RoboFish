@@ -19,6 +19,10 @@ STOP = 0x00
 
 ## Value of hall sensor.
 HALL_SENSOR = 22 #ホールセンサを22Pinに接続
+## Value of servo.
+SERVO_PIN = 23 #サーボは23Pinに接続
+#PWMを50Hzに設定
+PWM_HZ = 50
 
 ## smbus
 bus = smbus.SMBus(1)
@@ -30,14 +34,26 @@ class Robot(threading.Thread):
         self.address = address
         self.c = 0
         threading.Thread.__init__(self)
-        GPIO.cleanup()
+        
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup( HALL_SENSOR, GPIO.IN ) #GPIOを入力に設定
+        GPIO.setup(HALL_SENSOR, GPIO.IN) #GPIOを入力に設定
+        GPIO.setup(SERVO_PIN , GPIO.OUT) #GPIOを入力に設定
+        self.servo = GPIO.PWM(SERVO_PIN ,PWM_HZ) 
+        self.servo.start(10)
         self.flg = True
       
     def run(self):
         self.count()
+    
+    def rod_move(self, angle):
+        angle = self.map(angle, 0,180,2,12.5)
+        self.servo.ChangeDutyCycle(angle)
+        
+    def rod_stop(self):
+        print "rod_stop"
+        GPIO.cleanup()
+        self.servo.stop()
     
     def map(self, x, in_min, in_max, out_min, out_max):
         return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
@@ -55,9 +71,12 @@ class Robot(threading.Thread):
                 pass
             while not GPIO.input( HALL_SENSOR ):
                 pass
-            self.c += 1
-            sys.stdout.write("\rcount %d   " % self.c)
-            sys.stdout.flush()
+            if self.direction == FORWARD:
+                self.c += 1
+            elif self.direction == BACK:
+                self.c -= 1
+            #sys.stdout.write("\rcount %d   " % self.c)
+            #sys.stdout.flush()
             time.sleep(0.01)
                       
     # speedは1-100で指定
@@ -68,6 +87,7 @@ class Robot(threading.Thread):
         elif speed > 100:
             print "value is under 100,  must define 1-100 as speed."
             return
+        self.direction = FORWARD
         s = self.map(speed, 1, 100, 1, 58)
         sval = FORWARD | ((s+5)<<2) #スピードを設定して送信するデータを1Byte作成
         bus.write_i2c_block_data(self.address,CONTROL,[sval]) #生成したデータを送信
@@ -83,6 +103,7 @@ class Robot(threading.Thread):
         elif speed > 100:
             print "value is under 100,  must define 1-100 as speed."
             return
+        self.direction = BACK
         s= self.map(speed, 1, 100, 1, 58)
         sval = BACK| ((s+5)<<2) #スピードを設定して送信するデータを1Byte作成
         bus.write_i2c_block_data(self.address,CONTROL,[sval]) #生成したデータを送信
