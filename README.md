@@ -6,6 +6,6 @@ RoboFish.
 * [Dataset](/Dataset/README.md)
 * [Hardware](/Hardware/README.md)
 
-![](/Hardware/robofish.png)
+![](/Hardware/img/robofish.png)
 
-![](/Docs/wiring_diagram001.png)
+![](/Docs/img/wiring_diagram001.png)
