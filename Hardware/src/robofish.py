@@ -29,31 +29,37 @@ bus = smbus.SMBus(1)
 
 class Robot(threading.Thread):   
     flg = True
+    myServo = ""
 #class Robot():   
     def __init__(self, address=SLAVE_ADDRESS): 
         self.address = address
         self.c = 0
         threading.Thread.__init__(self)
-        
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(HALL_SENSOR, GPIO.IN) #GPIOを入力に設定
-        GPIO.setup(SERVO_PIN , GPIO.OUT) #GPIOを入力に設定
-        self.servo = GPIO.PWM(SERVO_PIN ,PWM_HZ) 
-        self.servo.start(10)
+        print "init"
+       
         self.flg = True
       
     def run(self):
+        print "run"
         self.count()
     
     def rod_move(self, angle):
         angle = self.map(angle, 0,180,2,12.5)
-        self.servo.ChangeDutyCycle(angle)
-        
+        print angle
+        self.myServo.ChangeDutyCycle(angle)
+    
+    def refresh(self):
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(HALL_SENSOR, GPIO.IN) #GPIOを入力に設定
+        GPIO.setup(SERVO_PIN , GPIO.OUT) #GPIOを入力に設定
+        self.myServo = GPIO.PWM(SERVO_PIN ,PWM_HZ) 
+        self.myServo.start(10)
+
     def rod_stop(self):
         print "rod_stop"
+        self.myServo.stop()
         GPIO.cleanup()
-        self.servo.stop()
     
     def map(self, x, in_min, in_max, out_min, out_max):
         return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
