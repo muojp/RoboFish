@@ -7,6 +7,6 @@ RoboFish.
 * [Hardware](/Hardware/README.md)
 * [Docs](/Docs/README.md)
 
-![](/Hardware/img/robofish001.png)
+![](/Hardware/img/robofish001.jpg)
 
 ![](/Docs/img/wiring_diagram001.png)
